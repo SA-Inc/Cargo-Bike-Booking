@@ -1,0 +1,74 @@
+GET http://localhost:3000/api/order
+
+###
+GET http://localhost:3000/api/order/1
+
+###
+POST http://localhost:3000/api/order
+Content-Type: application/json
+
+{
+    "from": "Furmanov",
+    "to": "Pushkin",
+    "expected_duration": 2,
+    "description": "Deliver some shit",
+    "start_time": "2021-09-24T21:06:50.552",
+    "first_name": "String",
+    "last_name": "ing",
+    "department": "String",
+    "role": "String"
+}
+
+###
+PUT http://localhost:3000/api/order/21
+Content-Type: application/json
+
+{
+    "from": "Furmanov",
+    "to": "Pushkin",
+    "expected_duration": 2,
+    "description": "Deliver some shit",
+    "user_id": 2
+}
+
+###
+DELETE http://localhost:3000/api/order/1
+
+
+
+
+
+###
+GET http://localhost:3000/api/user
+
+###
+GET http://localhost:3000/api/user/1
+
+###
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+    "first_name": "String",
+    "last_name": "String",
+    "department": "String",
+    "role": "String",
+    "email": "String",
+    "phone": "String"
+}
+
+###
+PUT http://localhost:3000/api/user/2
+Content-Type: application/json
+
+{
+    "first_name": "Arman",
+    "last_name": "Saparov",
+    "department": "Security",
+    "role": "Programmer",
+    "email": "a.sap@icloud.com",
+    "phone": "+77775553344"
+}
+
+###
+DELETE http://localhost:3000/api/user/1

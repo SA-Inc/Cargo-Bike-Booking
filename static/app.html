@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/colors.css">
+
+    <title>Cargo Bike Booking</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Nav Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <router-link class="navbar-brand" to="/">Cargo Bike Booking</router-link>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link class="nav-link" to="/">Домой</router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link class="nav-link" to="/booking">Бронирование</router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link class="nav-link" to="/about">Инструкция</router-link>
+            </li>
+
+          </ul>
+        </div>
+      </nav>
+
+      <router-view></router-view>
+    </div>
+
+    <script src="js/jquery-3.4.1.slim.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src='https://unpkg.com/v-calendar'></script>
+
+    <script src="components/home.vue"></script>
+    <script src="components/booking.vue"></script>
+    <script src="components/about.vue"></script>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
