@@ -12,6 +12,7 @@ const app = express();
 app.use('/static', express.static(path.join(__dirname, '/static')));
 app.use("/js", express.static(__dirname + '/static/js'));
 app.use("/css", express.static(__dirname + '/static/css'));
+app.use("/img", express.static(__dirname + '/static/img'));
 app.use("/components", express.static(__dirname + '/static/components'));
 
 app.use(express.json());

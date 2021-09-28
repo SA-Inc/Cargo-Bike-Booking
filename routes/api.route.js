@@ -106,64 +106,135 @@ router.delete('/order/:id', async (req, res, next) => {
 
 
 
-router.get('/user', async (req, res, next) => {
+// router.get('/user', async (req, res, next) => {
+//     try {
+//         const users = await prisma.user.findMany({});
+//         res.json(users);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+// router.get('/user/:id', async (req, res, next) => {
+//     try {
+//         const id = req.params.id;
+//         const user = await prisma.user.findUnique({
+//             where: {
+//                 id: Number(id)
+//             }
+//         });
+//         res.json(user);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+// router.post('/user', async (req, res, next) => {
+//     try {
+//         const user = await prisma.user.create({
+//             data: req.body,
+//         });
+//         res.json(user);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+// router.put('/user/:id', async (req, res, next) => {
+//     try {
+//         const id = req.params.id;
+//         const user = await prisma.user.update({
+//             where: {
+//                 id: Number(id)
+//             },
+//             data: req.body
+//         });
+//         res.json(user);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+// router.delete('/user/:id', async (req, res, next) => {
+//     try {
+//         const id = req.params.id;
+//         const user = await prisma.user.delete({
+//             where: {
+//                 id: Number(id)
+//             }
+//         });
+//         res.json(user);
+//     } catch (error) {
+//         next(error);
+//     }
+// });
+
+
+
+router.get('/asset', async (req, res, next) => {
     try {
-        const users = await prisma.user.findMany({});
-        res.json(users);
+        const orders = await prisma.asset.findMany({
+            orderBy: [
+                {
+                  id: 'desc',
+                }
+            ],
+        });
+        res.json(orders);
     } catch (error) {
         next(error);
     }
 });
 
-router.get('/user/:id', async (req, res, next) => {
+router.get('/asset/:id', async (req, res, next) => {
     try {
         const id = req.params.id;
-        const user = await prisma.user.findUnique({
+        const order = await prisma.asset.findUnique({
             where: {
                 id: Number(id)
             }
         });
-        res.json(user);
+        res.json(order);
     } catch (error) {
         next(error);
     }
 });
 
-router.post('/user', async (req, res, next) => {
+router.post('/asset', async (req, res, next) => {
     try {
-        const user = await prisma.user.create({
+        const order = await prisma.asset.create({
             data: req.body,
         });
-        res.json(user);
+        res.json(order);
     } catch (error) {
         next(error);
     }
 });
 
-router.put('/user/:id', async (req, res, next) => {
+router.put('/asset/:id', async (req, res, next) => {
     try {
         const id = req.params.id;
-        const user = await prisma.user.update({
+        const order = await prisma.asset.update({
             where: {
                 id: Number(id)
             },
             data: req.body
         });
-        res.json(user);
+        res.json(order);
     } catch (error) {
         next(error);
     }
 });
 
-router.delete('/user/:id', async (req, res, next) => {
+router.delete('/asset/:id', async (req, res, next) => {
     try {
         const id = req.params.id;
-        const user = await prisma.user.delete({
+        const order = await prisma.asset.delete({
             where: {
                 id: Number(id)
             }
         });
-        res.json(user);
+        res.json(order);
     } catch (error) {
         next(error);
     }

@@ -20,6 +20,10 @@ const About  = {
       <p class="text-center">Backend, Frontend, Database: Saparov Arman</p>
       <p class="text-center cherry_color">2021</p>
     </div>
+
+    <div class="footer">
+        <img src="img/daad_logo.png">
+      </div>
   </div>
   `
 }

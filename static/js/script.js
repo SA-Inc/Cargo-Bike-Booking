@@ -1,6 +1,7 @@
 const routes = [
   { path: '/', component: Home, name: 'Home' },
   { path: '/booking', component: Booking, name: 'Booking' },
+  { path: '/assets', component: Assets, name: 'Assets' },
   { path: '/about', component: About, name: 'About' }
 ];
 

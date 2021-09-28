@@ -39,3 +39,10 @@ model Order {
 //   phone String
 //   orders Order[]
 // }
+
+model Asset {
+  id Int @id @default(autoincrement())
+  name String
+  category String
+  created DateTime @default(now())
+}
