@@ -19,7 +19,6 @@ const Booking  = {
         end_time: null,
         expected_duration: null,
         actual_duration: null,
-        description: null,
         first_name: null,
         last_name: null,
         department: null,
@@ -30,12 +29,17 @@ const Booking  = {
         to: null,
         start_time: null,
         expected_duration: null,
-        description: null,
         first_name: null,
         last_name: null,
         department: null,
         role: null
       },
+
+      assets: [],
+      assetId: null,
+      assetCount: null,
+      // key: id, value: count
+      assetsList: {},
     }
   },
   methods: {
@@ -86,7 +90,7 @@ const Booking  = {
 
       console.log(this.newBooking)
 
-      axios.post(url, this.newBooking)
+      axios.post(url, {'booking_info': this.newBooking, 'assets_list': this.assetsList})
         .then(response => {
           console.log(this.newBooking)
           console.log(response);
@@ -217,21 +221,50 @@ const Booking  = {
         });
     },
 
+    getAllAssets: function() {
+      const url = '/api/asset'
+
+      this.loading = true;
+
+      axios.get(url)
+        .then(response => {
+          if (Array.isArray(response.data)) {
+            console.log('array');
+            console.log(response.data);
+            this.assets = response.data;
+          } else {
+            console.log('object');
+            this.assets = [response.data];
+          }
+
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    selectAsset: function(data) {
+      console.log(data)
+      this.assetId = data.id;
+    },
+
+    addAssetToList: function() {
+      if (this.assetId != null && this.assetCount != null && isNaN(this.assetCount) == false) {
+        Vue.set(this.assetsList, parseInt(this.assetId), parseInt(this.assetCount));
+      }
+      console.log(this.assetsList);
+    },
+
+    deleteAssetFromList: function(data) {
+      Vue.delete(this.assetsList, data.target.value);
+      console.log(this.assetsList);
+    }
+
   },
   mounted() {
-    axios.get(`/api/order`)
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          console.log('array');
-          this.bookings = response.data;
-        } else {
-          console.log('object');
-          this.bookings = [response.data];
-        }
-
-        console.log(this.bookings);
-        this.loading = false;
-      })
+    this.getAllBookings();
+    this.getAllAssets();
   },
   template: `
     <div class="container">
@@ -348,10 +381,9 @@ const Booking  = {
                     <div class="form-group">
                       <div v-if="formAction === 'Create'" class="row">
                         <div class="col">
-                          <label for="meeting-time">Start Time:</label>
                           <v-date-picker v-model="newBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input
+                              <input placeholder="Start Time:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -360,17 +392,15 @@ const Booking  = {
                           </v-date-picker>
                         </div>
                         <div class="col">
-                          <label for="productInputDescription">Expected Time (Hours)</label>
-                          <input type="text" class="form-control" id="productInputProductValue" v-model="newBooking.expected_duration">
+                          <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.expected_duration">
                         </div>
                       </div>
 
                       <div v-if="formAction === 'Update'" class="row">
                         <div class="col">
-                          <label for="meeting-time">Start Time:</label>
                           <v-date-picker v-model="selectedBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input
+                              <input placeholder="Start Time:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -379,10 +409,9 @@ const Booking  = {
                           </v-date-picker>
                         </div>
                         <div class="col">
-                          <label for="meeting-time">End Time:</label>
                           <v-date-picker v-model="selectedBooking.end_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input
+                              <input placeholder="End Time:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -393,8 +422,7 @@ const Booking  = {
                       </div>
                       <div v-if="formAction === 'Update'" class="row">
                         <div class="col">
-                          <label for="productInputDescription">Expected Time (Hours)</label>
-                          <input type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.expected_duration">
+                          <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.expected_duration">
                         </div>
                       </div>
                     </div>
@@ -404,26 +432,22 @@ const Booking  = {
                     <div class="form-group">
                       <div class="row">
                         <div class="col">
-                          <label for="productInputDescription">First Name</label>
-                          <input v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.first_name">
-                          <input v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.first_name" value="selectedBooking.first_name">
+                          <input placeholder="First Name"v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.first_name">
+                          <input placeholder="First Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.first_name" value="selectedBooking.first_name">
                         </div>
                         <div class="col">
-                          <label for="productInputDescription">Last Name</label>
-                          <input v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.last_name">
-                          <input v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.last_name" value="selectedBooking.last_name">
+                          <input placeholder="Last Name" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.last_name">
+                          <input placeholder="Last Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.last_name" value="selectedBooking.last_name">
                         </div>
                       </div>
                       <div class="row">
                         <div class="col">
-                          <label for="productInputDescription">Department</label>
-                          <input v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.department">
-                          <input v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.department" value="selectedBooking.department">
+                          <input placeholder="Department" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.department">
+                          <input placeholder="Department" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.department" value="selectedBooking.department">
                         </div>
                         <div class="col">
-                          <label for="productInputDescription">Role</label>
-                          <input v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.role">
-                          <input v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.role" value="selectedBooking.role">
+                          <input placeholder="Role" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.role">
+                          <input placeholder="Role" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.role" value="selectedBooking.role">
                         </div>
                       </div>
                     </div>
@@ -431,9 +455,52 @@ const Booking  = {
                     <hr>
 
                     <div class="form-group">
-                      <label for="productInputDescription">Description</label>
-                      <input v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.description">
-                      <input v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.description" value="selectedBooking.description">
+                      <div class="row">
+                        <div class="col">
+                          <Dropdown
+                            :options="assets"
+                            type="number"
+                            v-on:selected="selectAsset"
+                            v-on:filter=""
+                            :disabled="false"
+                            :maxItem="10"
+                            placeholder="Asset Name">
+                          </Dropdown>
+                        </div>
+                        <div class="col">
+                          <input placeholder= "Count" v-if="formAction === 'Create'" class="form-control" v-model="assetCount" type="number">
+                          <input placeholder= "Count" v-else class="form-control" v-model="assetCount" value="assetCount" type="number">
+                        </div>
+                        <div class="col">
+                          <button v-if="formAction === 'Create'" type="button" class="btn green_button" v-on:click="addAssetToList()">Add</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Asset Table -->
+                    <div class="table-responsive">
+                      <table class="table table-sm table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Count</th>
+                            <th>Del</th>
+                          </tr>
+                        </thead>
+              
+                        <tbody>
+                          <tr v-for="(value, key) in assetsList">
+                            <td>{{ key }}</td>
+                            <td v-for="asset in assets" v-if="asset.id == key">{{asset.name}}</td>
+                            <td>{{ value }}</td> 
+              
+                            <td>
+                              <button v-bind:value="key" v-on:click="deleteAssetFromList($event, key)" type="button" class="btn red_button">X</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
 
                   </div>

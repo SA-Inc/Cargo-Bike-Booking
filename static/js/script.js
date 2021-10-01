@@ -14,4 +14,6 @@ const router = new VueRouter({
 let app = new Vue({
   el: '#app',
   router: router
-})
+});
+
+Vue.use(Dropdown);

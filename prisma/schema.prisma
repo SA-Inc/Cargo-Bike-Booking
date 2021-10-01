@@ -11,22 +11,21 @@ generator client {
 }
 
 model Order {
-  id Int @id @default(autoincrement())
-  from String
-  to String
-  start_time DateTime
-  status String @default("created")
-  end_time DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  from              String
+  to                String
+  start_time        DateTime
+  status            String   @default("created")
+  end_time          DateTime @default(now())
   expected_duration Int
-  actual_duration Int?
-  description String
-
+  actual_duration   Int?
   first_name String
-  last_name String
+  last_name  String
   department String
-  role String
+  role       String
   // user User @relation(fields: [user_id], references: [id])
   // user_id Int
+  OrderAsset OrderAsset[]
 }
 
 // model User {
@@ -41,8 +40,19 @@ model Order {
 // }
 
 model Asset {
-  id Int @id @default(autoincrement())
-  name String
-  category String
-  created DateTime @default(now())
+  id         Int          @id @default(autoincrement())
+  name       String
+  category   String
+  created    DateTime     @default(now())
+  OrderAsset OrderAsset[]
+}
+
+model OrderAsset {
+  id       Int @id @default(autoincrement())
+  order_id Int
+  asset_id Int
+  count    Int
+
+  asset Asset @relation(fields: [asset_id], references: [id])
+  order Order @relation(fields: [order_id], references: [id])
 }

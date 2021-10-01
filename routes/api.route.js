@@ -59,9 +59,18 @@ router.get('/order/:id', async (req, res, next) => {
 
 router.post('/order', async (req, res, next) => {
     try {
+        console.log(req.body)
         const order = await prisma.order.create({
-            data: req.body,
+            data: req.body.booking_info,
         });
+
+        for (const asset in req.body.assets_list) {
+            let orderAssetRow = {order_id: parseInt(order.id), asset_id: parseInt(asset), count: parseInt(req.body.assets_list[asset])};
+            console.log(orderAssetRow);
+            await prisma.orderAsset.create({
+                data: orderAssetRow,
+            });
+        }
         res.json(order);
     } catch (error) {
         next(error);
