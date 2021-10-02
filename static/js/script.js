@@ -17,3 +17,4 @@ let app = new Vue({
 });
 
 Vue.use(Dropdown);
+Vue.component('star-rating', VueStarRating.default);

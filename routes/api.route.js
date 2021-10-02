@@ -51,7 +51,13 @@ router.get('/order/:id', async (req, res, next) => {
                 id: Number(id)
             }
         });
-        res.json(order);
+        const orderAssets = await prisma.orderAsset.findMany({
+            where: {
+                order_id: Number(id)
+            }
+        });
+
+        res.json({'booking_info': order, 'assets_list': orderAssets});
     } catch (error) {
         next(error);
     }
@@ -102,13 +108,22 @@ router.put('/order/:id', async (req, res, next) => {
 router.delete('/order/:id', async (req, res, next) => {
     try {
         const id = req.params.id;
+
+        await prisma.orderAsset.deleteMany({
+            where: {
+                order_id: Number(id)
+            }
+        });
+
         const order = await prisma.order.delete({
             where: {
                 id: Number(id)
             }
         });
+
         res.json(order);
     } catch (error) {
+        console.log(error)
         next(error);
     }
 });
@@ -242,6 +257,26 @@ router.delete('/asset/:id', async (req, res, next) => {
             where: {
                 id: Number(id)
             }
+        });
+        res.json(order);
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+router.put('/order_feedback/:id', async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const order = await prisma.order.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                star_rating: req.body.star_rating,
+                feedback: req.body.feedback,
+            },
         });
         res.json(order);
     } catch (error) {

@@ -23,6 +23,9 @@ model Order {
   last_name  String
   department String
   role       String
+
+  star_rating Int @default(0)
+  feedback String @default("")
   // user User @relation(fields: [user_id], references: [id])
   // user_id Int
   OrderAsset OrderAsset[]
