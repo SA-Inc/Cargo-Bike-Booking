@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { PrismaClient } = require('@prisma/client');
 const { json } = require('express');
+const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
 
@@ -24,6 +25,23 @@ function differenceBetweenTwoDateHoursMinutes(date1, date2) {
     diffInMilliSeconds -= minutes * 60;
 
     return [days, hours, minutes];
+}
+
+function sendOrderMail(email, orderData, assetsList) {
+    console.log(assetsList)
+    const msg = `
+    ID поездки: ${orderData.id}
+    Статус: ${orderData.status}
+    Из: ${orderData.from}
+    В: ${orderData.to}
+    Дата начала: ${orderData.start_time}
+    Ожидаемое время в часах: ${orderData.expected_duration}
+
+    Список предметов:
+    ${assetsList}
+    `
+    console.log(msg)
+    return true;
 }
 
 
@@ -63,6 +81,38 @@ router.get('/order/:id', async (req, res, next) => {
     }
 });
 
+router.get('/check_order/:id/:email', async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const email = req.params.email;
+
+        const order = await prisma.order.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
+
+        const orderAssets = await prisma.orderAsset.findMany({
+            where: {
+                order_id: Number(id)
+            }
+        });
+
+        console.log(order)
+
+        if (order == null || "email" in order == false || "id" in order == false || order.email === null || order.id === null) {
+            res.status(404).send({ 'msg': ":(" });
+        } else if (order.email === email && order.id === Number(id)) {
+            res.json({'booking_info': order, 'assets_list': orderAssets});
+        } else {
+            res.status(400).send({ 'msg': ":(" });
+        }
+    } catch (error) {
+        console.log(error)
+        next(error);
+    }
+});
+
 router.post('/order', async (req, res, next) => {
     try {
         console.log(req.body)
@@ -72,13 +122,15 @@ router.post('/order', async (req, res, next) => {
 
         for (const asset in req.body.assets_list) {
             let orderAssetRow = {order_id: parseInt(order.id), asset_id: parseInt(asset), count: parseInt(req.body.assets_list[asset])};
-            console.log(orderAssetRow);
+            
             await prisma.orderAsset.create({
                 data: orderAssetRow,
             });
         }
+        sendOrderMail(order.email, order, req.body.assets_list);
         res.json(order);
     } catch (error) {
+        console.log(error)
         next(error);
     }
 });

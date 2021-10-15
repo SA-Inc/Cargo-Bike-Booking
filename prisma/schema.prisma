@@ -19,10 +19,12 @@ model Order {
   end_time          DateTime @default(now())
   expected_duration Int
   actual_duration   Int?
-  first_name String
-  last_name  String
-  department String
-  role       String
+  description String?
+  email String
+  first_name String?
+  last_name  String?
+  department String?
+  role       String?
 
   star_rating Int @default(0)
   feedback String @default("")

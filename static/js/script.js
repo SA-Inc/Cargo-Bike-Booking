@@ -1,7 +1,8 @@
 const routes = [
   { path: '/', component: Home, name: 'Home' },
-  { path: '/booking', component: Booking, name: 'Booking' },
-  { path: '/assets', component: Assets, name: 'Assets' },
+  { path: '/create_and_view_booking', component: CreateAndViewBooking, name: 'CreateAndViewBooking' },
+  { path: '/manage_booking', component: ManageBooking, name: 'ManageBooking' },
+  { path: '/manage_assets', component: ManageAssets, name: 'ManageAssets' },
   { path: '/about', component: About, name: 'About' }
 ];
 
