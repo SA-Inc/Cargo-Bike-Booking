@@ -345,8 +345,13 @@ const ManageBooking  = {
           <tbody>
             <tr v-for="booking in bookings">
               <td>{{ booking.id }}</td>
-              <td>{{ booking.from }}</td>
-              <td>{{ booking.to }}</td>
+
+              <td v-if="booking.from === 'Furmanov'">Корпус на Фурманова</td>
+              <td v-if="booking.from === 'Pushkin'">Корпус на Пушкина</td>
+
+              <td v-if="booking.to === 'Furmanov'">Корпус на Фурманова</td>
+              <td v-if="booking.to === 'Pushkin'">Корпус на Пушкина</td>
+
               <td>{{ parseDateTime(booking.start_time) }}</td>
               <td>{{ booking.expected_duration }}</td>
               <td>{{ booking.actual_duration }}</td>
@@ -380,11 +385,11 @@ const ManageBooking  = {
                   </div>
 
                   <div class="modal-body">
-                    <p v-if="formAction === 'Update'">Booking Id: <span>{{ selectedBooking.id }}</span></p>
+                    <p v-if="formAction === 'Update'">ID поездки: <span>{{ selectedBooking.id }}</span></p>
 
                     <div v-if="formAction === 'Update'" class="form-group">
-                      <label for="productInputName">Status</label>
-                      <select v-model="selectedBooking.status" class="form-control" id="productInputCode">
+                      <label>Статус</label>
+                      <select v-model="selectedBooking.status" class="form-control">
                         <option value="created">Создан</option>
                         <option value="prepare">В подготовке</option>
                         <option value="process">В пути</option>
@@ -396,25 +401,25 @@ const ManageBooking  = {
                     <div class="form-group">
                       <div class="row">
                         <div class="col">
-                          <label for="productInputName">From</label>
-                          <select v-if="formAction === 'Create'" v-model="newBooking.from" class="form-control" id="productInputCode">
+                          <label>Из</label>
+                          <select v-if="formAction === 'Create'" v-model="newBooking.from" class="form-control">
                             <option value="Furmanov">Корпус на Фурманова</option>
                             <option value="Pushkin">Корпус на Пушкина</option>
                           </select>
 
-                          <select v-else v-model="selectedBooking.from" class="form-control" id="productInputCode">
+                          <select v-else v-model="selectedBooking.from" class="form-control">
                             <option value="Furmanov">Корпус на Фурманова</option>
                             <option value="Pushkin">Корпус на Пушкина</option>
                           </select>
                         </div>
                         <div class="col">
-                          <label for="productInputName">To</label>
-                          <select v-if="formAction === 'Create'" v-model="newBooking.to" class="form-control" id="productInputCode">
+                          <label >В</label>
+                          <select v-if="formAction === 'Create'" v-model="newBooking.to" class="form-control">
                             <option value="Furmanov">Корпус на Фурманова</option>
                             <option value="Pushkin">Корпус на Пушкина</option>
                           </select>
 
-                          <select v-else v-model="selectedBooking.to" class="form-control" id="productInputCode">
+                          <select v-else v-model="selectedBooking.to" class="form-control">
                             <option value="Furmanov">Корпус на Фурманова</option>
                             <option value="Pushkin">Корпус на Пушкина</option>
                           </select>
@@ -429,7 +434,7 @@ const ManageBooking  = {
                         <div class="col">
                           <v-date-picker v-model="newBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input placeholder="Start Time:"
+                              <input placeholder="Начало поездки:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -438,7 +443,7 @@ const ManageBooking  = {
                           </v-date-picker>
                         </div>
                         <div class="col">
-                          <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.expected_duration">
+                          <input placeholder="Ожидаемое время в часах" type="text" class="form-control" v-model="newBooking.expected_duration">
                         </div>
                       </div>
 
@@ -446,7 +451,7 @@ const ManageBooking  = {
                         <div class="col">
                           <v-date-picker v-model="selectedBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input placeholder="Start Time:"
+                              <input placeholder="Начало поездки:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -457,7 +462,7 @@ const ManageBooking  = {
                         <div class="col">
                           <v-date-picker v-model="selectedBooking.end_time" mode="dateTime" :timezone="timezone" is24hr>
                             <template v-slot="{ inputValue, inputEvents }">
-                              <input placeholder="End Time:"
+                              <input placeholder="Конец поездки:"
                                 class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                                 :value="inputValue"
                                 v-on="inputEvents"
@@ -468,7 +473,7 @@ const ManageBooking  = {
                       </div>
                       <div v-if="formAction === 'Update'" class="row">
                         <div class="col">
-                          <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.expected_duration">
+                          <input placeholder="Ожидаемое время в часах" type="text" class="form-control" v-model="selectedBooking.expected_duration">
                         </div>
                       </div>
                     </div>
@@ -484,22 +489,22 @@ const ManageBooking  = {
                       </div>
                       <div class="row">
                         <div class="col">
-                          <input placeholder="First Name"v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.first_name">
-                          <input placeholder="First Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.first_name" value="selectedBooking.first_name">
+                          <input placeholder="Имя"v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.first_name">
+                          <input placeholder="Имя" v-else type="text" class="form-control" v-model="selectedBooking.first_name" value="selectedBooking.first_name">
                         </div>
                         <div class="col">
-                          <input placeholder="Last Name" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.last_name">
-                          <input placeholder="Last Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.last_name" value="selectedBooking.last_name">
+                          <input placeholder="Фамилия" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.last_name">
+                          <input placeholder="Фамилия" v-else type="text" class="form-control" v-model="selectedBooking.last_name" value="selectedBooking.last_name">
                         </div>
                       </div>
                       <div class="row">
                         <div class="col">
-                          <input placeholder="Department" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.department">
-                          <input placeholder="Department" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.department" value="selectedBooking.department">
+                          <input placeholder="Дивизион" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.department">
+                          <input placeholder="Дивизион" v-else type="text" class="form-control" v-model="selectedBooking.department" value="selectedBooking.department">
                         </div>
                         <div class="col">
-                          <input placeholder="Role" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.role">
-                          <input placeholder="Role" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.role" value="selectedBooking.role">
+                          <input placeholder="Должность" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.role">
+                          <input placeholder="Должность" v-else type="text" class="form-control" v-model="selectedBooking.role" value="selectedBooking.role">
                         </div>
                       </div>
                     </div>
@@ -508,20 +513,16 @@ const ManageBooking  = {
 
                     <div v-if="formAction === 'Create'" class="form-group">
                       <div class="row">
+
                         <div class="col">
-                          <Dropdown
-                            :options="assets"
-                            type="number"
-                            v-on:selected="selectAsset"
-                            v-on:filter=""
-                            :disabled="false"
-                            :maxItem="10"
-                            placeholder="Asset Name">
-                          </Dropdown>
+                          <select class="form-control" v-model="assetId">
+                            <option v-for="asset in assets" v-bind:value="asset.id">{{asset.name}}</option>
+                          </select>
                         </div>
+
                         <div class="col">
-                          <input placeholder= "Count" v-if="formAction === 'Create'" class="form-control" v-model="assetCount" type="number">
-                          <input placeholder= "Count" v-else class="form-control" v-model="assetCount" value="assetCount" type="number">
+                          <input placeholder= "Количество" v-if="formAction === 'Create'" class="form-control" v-model="assetCount" type="number">
+                          <input placeholder= "Количество" v-else class="form-control" v-model="assetCount" value="assetCount" type="number">
                         </div>
                         <div class="col">
                           <button v-if="formAction === 'Create'" type="button" class="btn green_button" v-on:click="addAssetToList()">Add</button>
@@ -534,9 +535,9 @@ const ManageBooking  = {
                           <table class="table table-sm table-bordered table-hover">
                             <thead>
                               <tr>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Count</th>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Количество</th>
                                 <th>Del</th>
                               </tr>
                             </thead>
@@ -555,20 +556,19 @@ const ManageBooking  = {
                           </table>
                         </div>
                       </div>
+                    </div>
 
-                      <div class="row">
-                        <div class="col">
-                          <input placeholder="Description" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.description">
-                          <input placeholder="Description" v-else type="text" class="form-control" v-model="selectedBooking.description" value="selectedBooking.description">
-                        </div>
+                    <div class="row">
+                      <div class="col">
+                        <input placeholder="Примечание" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.description">
+                        <input placeholder="Примечание" v-else type="text" class="form-control" v-model="selectedBooking.description" value="selectedBooking.description">
                       </div>
-
                     </div>
 
                   </div>
 
                   <div class="modal-footer">
-                    <button type="button" class="btn red_button" v-on:click="showPostModal = false">Close</button>
+                    <button type="button" class="btn red_button" v-on:click="showPostModal = false">Закрыть</button>
                     <button v-if="formAction === 'Create'" type="button" class="btn yellow_button" @click.prevent="createBooking()">{{ formAction }}</button>
                     <button v-else type="button" class="btn green_button" v-bind:value="selectedBooking.id" @click.prevent="updateBookingById">{{ formAction }}</button>
                   </div>
@@ -587,36 +587,33 @@ const ManageBooking  = {
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Booking View</h5>
+                    <h5 class="modal-title">Просмотр поездки</h5>
                   </div>
                   <div class="modal-body">
                     <div class="row">
                       <div class="col">
-                        <p>Booking Id: <span>{{ selectedBooking.id }}</span></p>
+                        <p>ID поездки: <span>{{ selectedBooking.id }}</span></p>
                       </div>
                       <div class="col">
-                        <p v-if="selectedBooking.status === 'created'">Status: <span class="success_text">Создан</span></p>
-                        <p v-if="selectedBooking.status === 'prepare'">Status: <span class="warning_text">В подготовке</span></p>
-                        <p v-if="selectedBooking.status === 'process'">Status: <span class="warning_text">В пути</span></p>
-                        <p v-if="selectedBooking.status === 'delivered'">Status: <span class="success_text">Доставлен</span></p>
-                        <p v-if="selectedBooking.status === 'canceled'">Status: <span class="error_text">Отменен</span></p>
+                        <p v-if="selectedBooking.status === 'created'">Статус: <span class="success_text">Создан</span></p>
+                        <p v-if="selectedBooking.status === 'prepare'">Статус: <span class="warning_text">В подготовке</span></p>
+                        <p v-if="selectedBooking.status === 'process'">Статус: <span class="warning_text">В пути</span></p>
+                        <p v-if="selectedBooking.status === 'delivered'">Статус: <span class="success_text">Доставлен</span></p>
+                        <p v-if="selectedBooking.status === 'canceled'">Статус: <span class="error_text">Отменен</span></p>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col">
-                        <p>From: <span>{{ selectedBooking.from }}</span></p>
+                        <p>Из:
+                          <span v-if="selectedBooking.from === 'Furmanov'">Корпус на Фурманова</span>
+                          <span v-if="selectedBooking.from === 'Pushkin'">Корпус на Пушкина</span>
+                        </p>
                       </div>
                       <div class="col">
-                        <p>To: <span>{{ selectedBooking.to }}</span></p>
-                      </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row">
-                      <div class="col">
-                        <p>Feedback: <span>{{ rating.feedback }}</span></p>
-                        <p>Rating: <span>{{ rating.star_rating }}</span></p>
+                        <p>В:
+                          <span v-if="selectedBooking.to === 'Furmanov'">Корпус на Фурманова</span>
+                          <span v-if="selectedBooking.to === 'Pushkin'">Корпус на Пушкина</span>
+                        </p>
                       </div>
                     </div>
 
@@ -624,18 +621,27 @@ const ManageBooking  = {
 
                     <div class="row">
                       <div class="col">
-                        <p>Start Time: <span>{{ parseDateTime(selectedBooking.start_time) }}</span></p>
+                        <p>Отзыв: <span>{{ rating.feedback }}</span></p>
+                        <p>Рейтинг: <span>{{ rating.star_rating }}</span></p>
+                      </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                      <div class="col">
+                        <p>Начало поездки: <span>{{ parseDateTime(selectedBooking.start_time) }}</span></p>
                       </div>
                       <div class="col">
-                        <p>End Time: <span>{{ parseDateTime(selectedBooking.end_time) }}</span></p>
+                        <p>Конец поездки: <span>{{ parseDateTime(selectedBooking.end_time) }}</span></p>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col">
-                        <p>Expected Duration: <span>{{ selectedBooking.expected_duration }}</span></p>
+                        <p>Ожидаемое время в часах: <span>{{ selectedBooking.expected_duration }}</span></p>
                       </div>
                       <div class="col">
-                        <p>Actual Duration: <span>{{ selectedBooking.actual_duration }}</span></p>
+                        <p>Фактическое время в часах: <span>{{ selectedBooking.actual_duration }}</span></p>
                       </div>
                     </div>
 
@@ -648,18 +654,18 @@ const ManageBooking  = {
                     </div>
                     <div class="row">
                       <div class="col">
-                        <p>First Name: <span>{{ selectedBooking.first_name }}</span></p>
+                        <p>Имя: <span>{{ selectedBooking.first_name }}</span></p>
                       </div>
                       <div class="col">
-                        <p>Last Name: <span>{{ selectedBooking.last_name }}</span></p>
+                        <p>Фамилия: <span>{{ selectedBooking.last_name }}</span></p>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col">
-                        <p>Department: <span>{{ selectedBooking.department }}</span></p>
+                        <p>Дивизион: <span>{{ selectedBooking.department }}</span></p>
                       </div>
                       <div class="col">
-                        <p>Role: <span>{{ selectedBooking.role }}</span></p>
+                        <p>Должность: <span>{{ selectedBooking.role }}</span></p>
                       </div>
                     </div>
 
@@ -668,15 +674,15 @@ const ManageBooking  = {
                       <table class="table table-sm table-bordered table-hover">
                         <thead>
                           <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Count</th>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Количество</th>
                           </tr>
                         </thead>
               
                         <tbody>
                           <tr v-for="assetItem in orderAssetList">
-                            <td>{{assetItem.id}}</td>
+                            <td>{{assetItem.asset_id}}</td>
                             <td v-for="asset in assets" v-if="asset.id == assetItem.asset_id">{{asset.name}}</td>
                             <td>{{ assetItem.count }}</td>
                           </tr>
@@ -686,47 +692,14 @@ const ManageBooking  = {
 
                     <div class="row">
                       <div class="col">
+                        <p>Примечание:</p>
                         <p>{{ selectedBooking.description }}</p>
                       </div>
                     </div>
 
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn red_button" v-on:click="showGetModal = false">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </transition>
-
-
-
-        <transition name="modal" v-if="showRatingModal">
-          <div class="modal-mask">
-            <div class="modal-wrapper">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Booking Rating</h5>
-                  </div>
-                  <div class="modal-body">
-                    <div class="row">
-                      <div class="col">
-                        <textarea placeholder="Коментарий" type="text" class="form-control" v-model="rating.feedback"></textarea>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <star-rating v-model="rating.star_rating"></star-rating>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div class="modal-footer">
-                    <button type="button" class="btn red_button" v-on:click="showRatingModal = false">Close</button>
-                    <button type="button" class="btn green_button" @click.prevent="sendFeedback()">Send</button>
+                    <button type="button" class="btn red_button" v-on:click="showGetModal = false">Закрыть</button>
                   </div>
                 </div>
               </div>

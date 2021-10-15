@@ -7,7 +7,6 @@ const CreateAndViewBooking = {
       showWarningText: false,
       showPostModal: false,
       showRatingModal: false,
-      formAction: 'Create',
       getStatus: 'loading',
       timezone: '',
       selectedBooking: {
@@ -104,6 +103,7 @@ const CreateAndViewBooking = {
       axios.post(url, {'booking_info': this.newBooking, 'assets_list': this.assetsList})
         .then(response => {
           console.log(this.newBooking)
+          console.log(this.assetsList)
           console.log(response);
 
           this.showPostModal = false;
@@ -147,7 +147,7 @@ const CreateAndViewBooking = {
         })
         .catch((error) => {
           console.log(error.response);
-          if (error.response.status == 404) {
+          if (error.response.status == 404 || error.response.status == 400) {
             this.getStatus = 'not_found';
           }
         });
@@ -172,11 +172,6 @@ const CreateAndViewBooking = {
         .catch((error) => {
           console.log(error);
         });
-    },
-
-    selectAsset: function(data) {
-      console.log(data)
-      this.assetId = data.id;
     },
 
     addAssetToList: function() {
@@ -228,7 +223,7 @@ const CreateAndViewBooking = {
         <input placeholder="Email" type="text" class="form-control" v-model="selectedBooking.email">
       </div>
       <div class="col">
-        <input placeholder="Booking ID" type="text" class="form-control" v-model="selectedBooking.id">
+        <input placeholder="ID поездки" type="text" class="form-control" v-model="selectedBooking.id">
       </div>
       <div class="col">
         <button type="button" class="btn green_button" v-on:click="getBookingById()">Проверить</button>
@@ -238,29 +233,29 @@ const CreateAndViewBooking = {
     <div v-if="getStatus == 'found'">
       <div class="row">
         <div class="col">
-          <p>Booking Id: <span>{{ selectedBooking.id }}</span></p>
+          <p>ID поездки: <span>{{ selectedBooking.id }}</span></p>
         </div>
         <div class="col">
-          <p v-if="selectedBooking.status === 'created'">Status: <span class="success_text">Создан</span></p>
-          <p v-if="selectedBooking.status === 'prepare'">Status: <span class="warning_text">В подготовке</span></p>
-          <p v-if="selectedBooking.status === 'process'">Status: <span class="warning_text">В пути</span></p>
-          <p v-if="selectedBooking.status === 'delivered'">Status: <span class="success_text">Доставлен</span></p>
-          <p v-if="selectedBooking.status === 'canceled'">Status: <span class="error_text">Отменен</span></p>
+          <p v-if="selectedBooking.status === 'created'">Статус: <span class="success_text">Создан</span></p>
+          <p v-if="selectedBooking.status === 'prepare'">Статус: <span class="warning_text">В подготовке</span></p>
+          <p v-if="selectedBooking.status === 'process'">Статус: <span class="warning_text">В пути</span></p>
+          <p v-if="selectedBooking.status === 'delivered'">Статус: <span class="success_text">Доставлен</span></p>
+          <p v-if="selectedBooking.status === 'canceled'">Статус: <span class="error_text">Отменен</span></p>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <p>From: <span>{{ selectedBooking.from }}</span></p>
+          <p>Из: <span>{{ selectedBooking.from }}</span></p>
         </div>
         <div class="col">
-          <p>To: <span>{{ selectedBooking.to }}</span></p>
+          <p>В: <span>{{ selectedBooking.to }}</span></p>
         </div>
       </div>
 
       <div v-if="selectedBooking.status === 'delivered'">
         <div class="row">
           <div class="col">
-            <button v-bind:value="selectedBooking.id" v-on:click="showRatingModal = true; rating.id = selectedBooking.id;" type="button" class="btn yellow_button">Rate</button>
+            <button v-bind:value="selectedBooking.id" v-on:click="showRatingModal = true; rating.id = selectedBooking.id;" type="button" class="btn yellow_button">Оценить</button>
           </div>
         </div>
       </div>
@@ -269,18 +264,18 @@ const CreateAndViewBooking = {
 
       <div class="row">
         <div class="col">
-          <p>Start Time: <span>{{ parseDateTime(selectedBooking.start_time) }}</span></p>
+          <p>Начало поездки: <span>{{ parseDateTime(selectedBooking.start_time) }}</span></p>
         </div>
         <div class="col">
-          <p>End Time: <span>{{ parseDateTime(selectedBooking.end_time) }}</span></p>
+          <p>Конец поездки: <span>{{ parseDateTime(selectedBooking.end_time) }}</span></p>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <p>Expected Duration: <span>{{ selectedBooking.expected_duration }}</span></p>
+          <p>Ожидаемое время в часах: <span>{{ selectedBooking.expected_duration }}</span></p>
         </div>
         <div class="col">
-          <p>Actual Duration: <span>{{ selectedBooking.actual_duration }}</span></p>
+          <p>Фактическое время в часах: <span>{{ selectedBooking.actual_duration }}</span></p>
         </div>
       </div>
 
@@ -293,18 +288,18 @@ const CreateAndViewBooking = {
       </div>
       <div class="row">
         <div class="col">
-          <p>First Name: <span>{{ selectedBooking.first_name }}</span></p>
+          <p>Имя: <span>{{ selectedBooking.first_name }}</span></p>
         </div>
         <div class="col">
-          <p>Last Name: <span>{{ selectedBooking.last_name }}</span></p>
+          <p>Фамилия: <span>{{ selectedBooking.last_name }}</span></p>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <p>Department: <span>{{ selectedBooking.department }}</span></p>
+          <p>Дивизион: <span>{{ selectedBooking.department }}</span></p>
         </div>
         <div class="col">
-          <p>Role: <span>{{ selectedBooking.role }}</span></p>
+          <p>Должность: <span>{{ selectedBooking.role }}</span></p>
         </div>
       </div>
 
@@ -313,9 +308,9 @@ const CreateAndViewBooking = {
         <table class="table table-sm table-bordered table-hover">
           <thead>
             <tr>
-              <th>Id</th>
-              <th>Name</th>
-              <th>Count</th>
+              <th>ID</th>
+              <th>Имя</th>
+              <th>Количество</th>
             </tr>
           </thead>
 
@@ -331,13 +326,14 @@ const CreateAndViewBooking = {
 
       <div class="row">
         <div class="col">
+          <p>Примечание:</p>
           <p>{{ selectedBooking.description }}</p>
         </div>
       </div>
     </div>
 
     <div v-if="getStatus == 'not_found'">
-      <p>Заявка по Email или ID не найдена</p>
+      <h1 class="error_text">Заявка по Email или ID не найдена</h1>
     </div>
 
     <transition name="modal" v-if="showPostModal">
@@ -347,45 +343,22 @@ const CreateAndViewBooking = {
             <div class="modal-content">
             
               <div class="modal-header">
-                <h5 class="modal-title">{{ formAction }}</h5>
+                <h5 class="modal-title">Создать поездку</h5>
               </div>
 
               <div class="modal-body">
-                <p v-if="formAction === 'Update'">Booking Id: <span>{{ selectedBooking.id }}</span></p>
-
-                <div v-if="formAction === 'Update'" class="form-group">
-                  <label for="productInputName">Status</label>
-                  <select v-model="selectedBooking.status" class="form-control" id="productInputCode">
-                    <option value="created">Создан</option>
-                    <option value="prepare">В подготовке</option>
-                    <option value="process">В пути</option>
-                    <option value="delivered">Доставлен</option>
-                    <option value="canceled">Отменен</option>
-                  </select>
-                </div>
-
                 <div class="form-group">
                   <div class="row">
                     <div class="col">
-                      <label for="productInputName">From</label>
-                      <select v-if="formAction === 'Create'" v-model="newBooking.from" class="form-control" id="productInputCode">
-                        <option value="Furmanov">Корпус на Фурманова</option>
-                        <option value="Pushkin">Корпус на Пушкина</option>
-                      </select>
-
-                      <select v-else v-model="selectedBooking.from" class="form-control" id="productInputCode">
+                      <label>Из</label>
+                      <select v-model="newBooking.from" class="form-control">
                         <option value="Furmanov">Корпус на Фурманова</option>
                         <option value="Pushkin">Корпус на Пушкина</option>
                       </select>
                     </div>
                     <div class="col">
-                      <label for="productInputName">To</label>
-                      <select v-if="formAction === 'Create'" v-model="newBooking.to" class="form-control" id="productInputCode">
-                        <option value="Furmanov">Корпус на Фурманова</option>
-                        <option value="Pushkin">Корпус на Пушкина</option>
-                      </select>
-
-                      <select v-else v-model="selectedBooking.to" class="form-control" id="productInputCode">
+                      <label>В</label>
+                      <select v-model="newBooking.to" class="form-control">
                         <option value="Furmanov">Корпус на Фурманова</option>
                         <option value="Pushkin">Корпус на Пушкина</option>
                       </select>
@@ -396,11 +369,11 @@ const CreateAndViewBooking = {
                 <hr>
 
                 <div class="form-group">
-                  <div v-if="formAction === 'Create'" class="row">
+                  <div class="row">
                     <div class="col">
                       <v-date-picker v-model="newBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
                         <template v-slot="{ inputValue, inputEvents }">
-                          <input placeholder="Start Time:"
+                          <input placeholder="Начало поездки:"
                             class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
                             :value="inputValue"
                             v-on="inputEvents"
@@ -409,37 +382,7 @@ const CreateAndViewBooking = {
                       </v-date-picker>
                     </div>
                     <div class="col">
-                      <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.expected_duration">
-                    </div>
-                  </div>
-
-                  <div v-if="formAction === 'Update'" class="row">
-                    <div class="col">
-                      <v-date-picker v-model="selectedBooking.start_time" mode="dateTime" :timezone="timezone" is24hr>
-                        <template v-slot="{ inputValue, inputEvents }">
-                          <input placeholder="Start Time:"
-                            class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
-                            :value="inputValue"
-                            v-on="inputEvents"
-                          />
-                        </template>
-                      </v-date-picker>
-                    </div>
-                    <div class="col">
-                      <v-date-picker v-model="selectedBooking.end_time" mode="dateTime" :timezone="timezone" is24hr>
-                        <template v-slot="{ inputValue, inputEvents }">
-                          <input placeholder="End Time:"
-                            class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
-                            :value="inputValue"
-                            v-on="inputEvents"
-                          />
-                        </template>
-                      </v-date-picker>
-                    </div>
-                  </div>
-                  <div v-if="formAction === 'Update'" class="row">
-                    <div class="col">
-                      <input placeholder="Expected Time (Hours)" type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.expected_duration">
+                      <input placeholder="Ожидаемое время в часах" type="text" class="form-control" v-model="newBooking.expected_duration">
                     </div>
                   </div>
                 </div>
@@ -449,53 +392,42 @@ const CreateAndViewBooking = {
                 <div class="form-group">
                   <div class="row">
                     <div class="col">
-                      <input placeholder="Email" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.email">
-                      <input placeholder="Email" v-else type="text" class="form-control" v-model="selectedBooking.email" value="selectedBooking.email">
+                      <input placeholder="Email" type="text" class="form-control" v-model="newBooking.email">
                     </div>
                   </div>
                   <div class="row">
                     <div class="col">
-                      <input placeholder="First Name"v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.first_name">
-                      <input placeholder="First Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.first_name" value="selectedBooking.first_name">
+                      <input placeholder="Имя" type="text" class="form-control" v-model="newBooking.first_name">
                     </div>
                     <div class="col">
-                      <input placeholder="Last Name" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.last_name">
-                      <input placeholder="Last Name" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.last_name" value="selectedBooking.last_name">
+                      <input placeholder="Фамилия" type="text" class="form-control" v-model="newBooking.last_name">
                     </div>
                   </div>
                   <div class="row">
                     <div class="col">
-                      <input placeholder="Department" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.department">
-                      <input placeholder="Department" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.department" value="selectedBooking.department">
+                      <input placeholder="Дивизион" type="text" class="form-control" v-model="newBooking.department">
                     </div>
                     <div class="col">
-                      <input placeholder="Role" v-if="formAction === 'Create'" type="text" class="form-control" id="productInputProductValue" v-model="newBooking.role">
-                      <input placeholder="Role" v-else type="text" class="form-control" id="productInputProductValue" v-model="selectedBooking.role" value="selectedBooking.role">
+                      <input placeholder="Должность" type="text" class="form-control" v-model="newBooking.role">
                     </div>
                   </div>
                 </div>
 
                 <hr>
 
-                <div v-if="formAction === 'Create'" class="form-group">
+                <div class="form-group">
                   <div class="row">
                     <div class="col">
-                      <Dropdown
-                        :options="assets"
-                        type="number"
-                        v-on:selected="selectAsset"
-                        v-on:filter=""
-                        :disabled="false"
-                        :maxItem="10"
-                        placeholder="Asset Name">
-                      </Dropdown>
+                      <select class="form-control" v-model="assetId">
+                        <option v-for="asset in assets" v-bind:value="asset.id">{{asset.name}}</option>
+                      </select>
+                    </div>
+
+                    <div class="col">
+                      <input placeholder= "Количество" class="form-control" v-model="assetCount" type="number">
                     </div>
                     <div class="col">
-                      <input placeholder= "Count" v-if="formAction === 'Create'" class="form-control" v-model="assetCount" type="number">
-                      <input placeholder= "Count" v-else class="form-control" v-model="assetCount" value="assetCount" type="number">
-                    </div>
-                    <div class="col">
-                      <button v-if="formAction === 'Create'" type="button" class="btn green_button" v-on:click="addAssetToList()">Add</button>
+                      <button type="button" class="btn green_button" v-on:click="addAssetToList()">+</button>
                     </div>
                   </div>
 
@@ -526,22 +458,19 @@ const CreateAndViewBooking = {
                       </table>
                     </div>
                   </div>
+                </div>
 
-                  <div class="row">
-                    <div class="col">
-                      <input placeholder="Description" v-if="formAction === 'Create'" type="text" class="form-control" v-model="newBooking.description">
-                      <input placeholder="Description" v-else type="text" class="form-control" v-model="selectedBooking.description" value="selectedBooking.description">
-                    </div>
+                <div class="row">
+                  <div class="col">
+                    <input placeholder="Примечание" type="text" class="form-control" v-model="newBooking.description">
                   </div>
-
                 </div>
 
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn red_button" v-on:click="showPostModal = false">Close</button>
-                <button v-if="formAction === 'Create'" type="button" class="btn yellow_button" @click.prevent="createBooking()">{{ formAction }}</button>
-                <button v-else type="button" class="btn green_button" v-bind:value="selectedBooking.id" @click.prevent="updateBookingById">{{ formAction }}</button>
+                <button type="button" class="btn red_button" v-on:click="showPostModal = false">Закрыть</button>
+                <button type="button" class="btn yellow_button" @click.prevent="createBooking()">Создать</button>
               </div>
 
             </div>
@@ -558,7 +487,7 @@ const CreateAndViewBooking = {
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title">Booking Rating</h5>
+                <h5 class="modal-title">Рейтинг поездки</h5>
               </div>
               <div class="modal-body">
                 <div class="row">
@@ -575,8 +504,8 @@ const CreateAndViewBooking = {
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn red_button" v-on:click="showRatingModal = false">Close</button>
-                <button type="button" class="btn green_button" @click.prevent="sendFeedback()">Send</button>
+                <button type="button" class="btn red_button" v-on:click="showRatingModal = false">Закрыть</button>
+                <button type="button" class="btn green_button" @click.prevent="sendFeedback()">Отправить</button>
               </div>
             </div>
           </div>

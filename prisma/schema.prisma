@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./booking.db"
 }
 
 generator client {
@@ -16,7 +16,7 @@ model Order {
   to                String
   start_time        DateTime
   status            String   @default("created")
-  end_time          DateTime @default(now())
+  end_time          DateTime?
   expected_duration Int
   actual_duration   Int?
   description String?
@@ -25,30 +25,16 @@ model Order {
   last_name  String?
   department String?
   role       String?
-
   star_rating Int @default(0)
   feedback String @default("")
-  // user User @relation(fields: [user_id], references: [id])
-  // user_id Int
+
   OrderAsset OrderAsset[]
 }
 
-// model User {
-//   id Int @id @default(autoincrement())
-//   first_name String
-//   last_name String
-//   department String
-//   role String
-//   email String
-//   phone String
-//   orders Order[]
-// }
-
 model Asset {
   id         Int          @id @default(autoincrement())
-  name       String
+  name       String @unique
   category   String
-  created    DateTime     @default(now())
   OrderAsset OrderAsset[]
 }
 
