@@ -29,6 +29,7 @@ app.get('/', async (req, res, next) => {
 
 app.use('/api', require('./routes/order.js'));
 app.use('/api', require('./routes/asset.js'));
+app.use('/', require('./routes/login.js'));
 
 app.use((req, res, next) => {
     next(createError.NotFound());

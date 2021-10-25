@@ -47,3 +47,8 @@ model OrderAsset {
   asset Asset @relation(fields: [asset_id], references: [id])
   order Order @relation(fields: [order_id], references: [id])
 }
+
+model Session {
+  token String @id
+  last_login DateTime
+}

@@ -8,6 +8,7 @@ const CreateAndViewBooking = {
       showPostModal: false,
       showRatingModal: false,
       getStatus: 'loading',
+      createdID: null,
       timezone: '',
       selectedBooking: {
         id: null,
@@ -106,6 +107,8 @@ const CreateAndViewBooking = {
           console.log(this.assetsList)
           console.log(response);
 
+          this.createdID = response.data.id;
+
           this.showPostModal = false;
           this.showActionText('success');
         })
@@ -114,7 +117,7 @@ const CreateAndViewBooking = {
         });
     },
 
-    getBookingById: function(data) {
+    getBookingById: function() {
       const url = `/api/check_order/${this.selectedBooking.id}/${this.selectedBooking.email}`;
 
       this.loading = true;
@@ -141,6 +144,8 @@ const CreateAndViewBooking = {
 
           this.loading = false;
 
+          this.createdID = null;
+
           if (response.status == 200) {
             this.getStatus = 'found';
           }
@@ -150,6 +155,23 @@ const CreateAndViewBooking = {
           if (error.response.status == 404 || error.response.status == 400) {
             this.getStatus = 'not_found';
           }
+        });
+    },
+
+    cancelBooking: function() {
+      const url = `/api/order/${this.selectedBooking.id}`;
+
+      this.selectedBooking.status = 'canceled';
+
+      axios.put(url, this.selectedBooking)
+        .then(response => {
+          console.log(response);
+
+          this.showPostModal = false;
+          this.getBookingById();
+        })
+        .catch((error) => {
+          console.log(error);
         });
     },
 
@@ -212,6 +234,11 @@ const CreateAndViewBooking = {
   template: `
   <div class="container">
     <div class="row">
+      <p>Для создания поездки необходимо нажать на кнопку "Создать" и заполнить необходимые данные</p>
+      <p>Для проверки состояния поездки необходимо ввести свой Email и ID поездки, который пришел в сообщении</p>
+    </div>
+
+    <div class="row">
       <h1>
         <span>Бронирование поездки</span>
         <button v-on:click="showPostModal = true;" type="button" class="btn yellow_button">Создать</button>
@@ -252,10 +279,17 @@ const CreateAndViewBooking = {
         </div>
       </div>
 
-      <div v-if="selectedBooking.status === 'delivered'">
+      <div v-if="selectedBooking.status === 'delivered' || selectedBooking.status === 'canceled'">
         <div class="row">
           <div class="col">
             <button v-bind:value="selectedBooking.id" v-on:click="showRatingModal = true; rating.id = selectedBooking.id;" type="button" class="btn yellow_button">Оценить</button>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div class="row">
+          <div class="col">
+            <button v-bind:value="selectedBooking.id" v-on:click="cancelBooking()" type="button" class="btn red_button">Отменить поездку</button>
           </div>
         </div>
       </div>
@@ -334,6 +368,9 @@ const CreateAndViewBooking = {
 
     <div v-if="getStatus == 'not_found'">
       <h1 class="error_text">Заявка по Email или ID не найдена</h1>
+    </div>
+    <div v-if="createdID != null">
+      <h1 class="success_text">Заявка создана. ID: {{ createdID }}</h1>
     </div>
 
     <transition name="modal" v-if="showPostModal">

@@ -70,7 +70,7 @@ async function sendOrderMail(email, orderData, assetsList) {
         assetsListMsg += `${asset.asset.name} - ${asset.count} ед.\n`
     });
 
-    const msg = `ID поездки: ${orderData.id}\nСтатус: ${renameStatus(orderData.status)}\nИз: ${renamePlace(orderData.from)}\nВ: ${renamePlace(orderData.to)}\nДата начала: ${orderData.start_time}\nОжидаемое время в часах: ${orderData.expected_duration}\n\nСписок предметов:\n${assetsListMsg}`
+    const msg = `Здравствуйте. Спасибо за использование системы Cargo Bike. Ваши данные поездки доступны ниже:\n\nID поездки: ${orderData.id}\nСтатус: ${renameStatus(orderData.status)}\nИз: ${renamePlace(orderData.from)}\nВ: ${renamePlace(orderData.to)}\nДата начала: ${orderData.start_time}\nОжидаемое время в часах: ${orderData.expected_duration}\n\nСписок предметов:\n${assetsListMsg}`
     
     let info = await transporter.sendMail({
         from: 'LogCentre@dku.kz',
@@ -190,6 +190,13 @@ router.put('/order/:id', async (req, res, next) => {
 
     try {
         const id = req.params.id;
+
+        const oldOrderState = await prisma.order.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
+
         const order = await prisma.order.update({
             where: {
                 id: Number(id)
@@ -206,7 +213,9 @@ router.put('/order/:id', async (req, res, next) => {
             },
         });
 
-        sendOrderMail(order.email, order, orderAssets);
+        if (oldOrderState.status != order.status) {
+            sendOrderMail(order.email, order, orderAssets);
+        }
 
         res.json(order);
     } catch (error) {
